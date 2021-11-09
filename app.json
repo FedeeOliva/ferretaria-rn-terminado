@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "ferreteria-rn",
+    "slug": "ferreteria-rn",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "ferreteria-rn"
+}
