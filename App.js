@@ -1,13 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import StackNavigator from './src/navigation/StackNavigation';
 import { StyleSheet, Text, View } from 'react-native';
+import ProductState from './src/state/product/productState';
+import RegisterState from './src/state/register/registerState';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ProductState>
+      <RegisterState>
+        <NavigationContainer>
+            <StackNavigator/>
+        </NavigationContainer>
+      </RegisterState>
+    </ProductState>
   );
 }
 
