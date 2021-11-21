@@ -23,7 +23,7 @@ import {
 
 
 const initialState = {
-    products: [],
+    registers: [],
     error: false,
     isLoading: true
 }
@@ -39,7 +39,7 @@ const RegisterState = props => {
             
             dispatch({
                 type: GET_REGISTERS_SUCCESS,
-                payload: registers
+                payload: registers.data
             });
         }catch(err){
             console.log(err)
@@ -58,7 +58,7 @@ const RegisterState = props => {
             
             dispatch({
                 type: GET_REGISTER_SUCCESS,
-                payload: register
+                payload: register.data
             });
         }catch(err){
             console.log(err)
@@ -71,12 +71,13 @@ const RegisterState = props => {
 
     const createRegister = async register => {
         dispatch({type: CREATE_REGISTER_INIT});
-        
+        console.log(register);
         try{
             const {data} = await Axios.post(`/api/registers`, register);
+            console.log(data.data);
             dispatch({
                 type: CREATE_REGISTER_SUCCESS,
-                payload: data
+                payload: data.data
             });
         }catch(err){
             console.log(err)

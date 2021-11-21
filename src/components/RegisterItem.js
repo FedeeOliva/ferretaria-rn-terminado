@@ -1,21 +1,24 @@
 import React from 'react'
 import { View, Text,StyleSheet } from 'react-native'
+import format from 'date-fns/format'
 import Button from './Button'
 
 const RegisterItem = ({register}) => {
     return (
         <View style={styles.container}>
             <View style={styles.data}>
-                <Text style={styles.textInfo}>ID: {register.id}</Text>
-                <Text style={styles.textInfo}>Producto: {register.producto.nombre}</Text>
-                <Text style={styles.textInfo}>Tipo: {register.tipo}</Text>
-                <Text style={styles.textInfo}>Cantidad: {register.cantidad}</Text>
-                <Text style={styles.textPrice}>Importe: ${register.importe}</Text>
+                <Text style={styles.textInfo}>
+                    Fecha: {format(new Date(register?.createdAt), "dd-MM-yyyy HH:mm:ss")}
+                    </Text>
+                <Text style={styles.textInfo}>Producto: {register?.producto?.nombre}</Text>
+                <Text style={styles.textInfo}>Tipo: {register?.tipo}</Text>
+                <Text style={styles.textInfo}>Cantidad: {register?.cantidad}{register?.producto?.unidad}</Text>
+                <Text style={styles.textPrice}>Importe: ${register?.importe}</Text>
             </View>
             <View>
-                <Button
+                {/* <Button
                     title="Editar"
-                />
+                /> */}
             </View>                
         </View>
     )

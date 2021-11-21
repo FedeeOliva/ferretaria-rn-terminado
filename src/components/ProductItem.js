@@ -13,7 +13,7 @@ const ProductItem = ({product}) => {
         <View style={styles.container}>
             <View style={styles.data}>
                 <Text style={styles.textInfo}>{product.nombre}</Text>
-                <Text style={styles.textInfo}>Stock: {product.stock}{product.unidad}</Text>
+                <Text style={styles.textInfo}>Stock: {calcularStock(product.registros) || 0}{product.unidad}</Text>
                 <Text style={styles.textPrice}>{`$${product.precio}/${product.unidad}`}</Text>
             </View>
             <View style={styles.options}>
@@ -58,5 +58,13 @@ const styles = StyleSheet.create({
         
     }
 })
+
+const calcularStock = registros => {
+    return registros.reduce( (acc, prod) => {
+        if(prod.tipo === "ingreso") acc+=prod.cantidad
+        else acc-=prod.cantidad
+        return acc;
+    }, 0)
+}
 
 export default ProductItem

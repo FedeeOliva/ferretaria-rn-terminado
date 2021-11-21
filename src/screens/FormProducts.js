@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react'
-import { View, TextInput, StyleSheet } from 'react-native'
+import { Text, View, TextInput, StyleSheet } from 'react-native'
 import { Picker } from 'react-native-woodpicker'
 import Button from '../components/Button'
 import {globalStyle} from '../globalCSS';
@@ -19,13 +19,18 @@ const FormProducts = ({route: {params}, navigation}) => {
 
     const {createProduct,editProduct} = useContext(productContext);
 
-    const [pickedData, setPickedData] = useState(params?.unidad || UNIDADES[0]);
+    const [pickedData, setPickedData] = useState(UNIDADES.find( el => el.value == params?.unidad) || UNIDADES[0]);
     const [nombre, setNombre] = useState(params?.nombre || '');
     const [precio, setPrecio] = useState(params?.precio || '');
+    const [alert, setAlert] = useState(null);
     
-    console.log(pickedData);
 
     const handleSubmit = () => {
+        if(!nombre || !precio || pickedData){
+            setAlert("Todos los campos son obligatorios")
+            return
+        }
+        setAlert(null);
         if(params){
             const product = {
                 ...params,
@@ -73,6 +78,10 @@ const FormProducts = ({route: {params}, navigation}) => {
                     fontSize: 20
                 }}
             />
+            {alert && 
+                <Text styles={globalStyle.alert}>
+                    {alert}
+                </Text>}
             <Button
                 title={params? "Editar Producto" : "Crear Producto"}
                 onPress={handleSubmit}

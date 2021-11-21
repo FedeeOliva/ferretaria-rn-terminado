@@ -1,38 +1,58 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect, useContet, useContext} from 'react'
 import {View, StyleSheet, TextInput, Text} from 'react-native';
 import { Picker } from 'react-native-woodpicker'
 import Button from '../components/Button';
 import { globalStyle } from '../globalCSS';
+import registerContext from '../state/register/registerContext';
+import productContext from '../state/product/productContext';
 
-const PRODUCTOS = [
-    {label: 'U', value: 'u'},
-    {label: 'Kg', value: 'kg'},
-    {label: 'Gr', value: 'gr'},
-    {label: 'Litro', value: 'litro'},
-    {label: 'Ml', value: 'ml'},
-    {label: 'Metro', value: 'metro'},
-    {label: 'Cm', value: 'cm'},
-]
 
-const FormRegisters = ({route:{params}}) => {
-    const [pickedProduct, setPickedProduct] = useState('u');
-    const [cantidad, setCantidad] = useState();
+const FormRegisters = ({ navigation , route:{params}}) => {
+    const [pickedProduct, setPickedProduct] = useState(1);
+    const [cantidad, setCantidad] = useState('');
+    const [productsOptions, setProductsOptions] = useState([]);
+
+    const {getProducts, products} = useContext(productContext);
+    const {createRegister, editRegister} = useContext(registerContext);
+
+    useEffect(() => {
+        getProducts();
+    }, []);
+
+    useEffect(() => {
+        if(products.length){
+            const options = products.reduce( (acc, product) => {
+                const option = {
+                    label: `${product.nombre}($${product.precio}/${product.unidad})`, 
+                    value: product.id.toString()};
+                acc.push(option);
+                return acc;            
+            }, []);
+            setPickedProduct(options[0]);
+            setProductsOptions(options);
+        }
+    }, [products]);
+
+    const handleSubmit = () => {
+        const register = {
+            cantidad,
+            tipo: params,
+            productoId: pickedProduct.value,
+            importe: calcularImporte(pickedProduct.value, products, cantidad)
+        }
+        createRegister(register);
+        navigation.navigate("Home");
+    }
 
     return (
         <View style={globalStyle.containerScreen}>
             <Text style={styles.text}>
                 Tipo: {params == 'ingreso'? 'Ingreso(Compra)' : 'Egreso(Venta)'}
             </Text>
-            <TextInput
-                placeholder="Cantidad"
-                keyboardType='numeric'
-                style={styles.input}
-                value={cantidad}
-                onChange={e => setCantidad(e.target.value)}
-            />
+            
             <Picker
                 item={pickedProduct}
-                items={PRODUCTOS}
+                items={productsOptions}
                 onItemChange={setPickedProduct}
                 title="Productos"
                 placeholder="Producto"
@@ -43,9 +63,17 @@ const FormRegisters = ({route:{params}}) => {
                     textAlign: 'left'
                 }}
             />
-            <Text style={styles.text}>Importe total: $3516</Text>
+            <TextInput
+                placeholder="Cantidad"
+                keyboardType='numeric'
+                style={styles.input}
+                value={cantidad}
+                onChange={e => setCantidad(e.target.value)}
+            />
+            <Text style={styles.text}>Importe total: ${calcularImporte(pickedProduct.value,products,cantidad)}</Text>
             <Button
                 title="Crear Registro"
+                onPress={handleSubmit}
             />
 
         </View>
@@ -68,5 +96,11 @@ const styles = StyleSheet.create({
         //textAlign: 'center'
     }
 })
+
+const calcularImporte = (idProducto, productos, cantidad) => {
+    if(!idProducto || !productos.length || !cantidad) return 0;
+    const selectedProduct = productos.find( product => product.id == idProducto);
+    return selectedProduct.precio*Number(cantidad);
+}
 
 export default FormRegisters
